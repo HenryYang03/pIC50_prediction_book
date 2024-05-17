@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Bioactivity_prediction &#8212; My sample book</title>
+    <title>IC50 prediction (Extract dataset) &#8212; IC50_Prediction</title>
   
   
   
@@ -60,7 +60,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Data_extraction_from_ChEMBL';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Notebooks with MyST Markdown" href="../markdown-notebooks.html" />
+    <link rel="prev" title="Welcome to IC50 Prediction Book" href="../intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -149,8 +149,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="My sample book - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="My sample book - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IC50_Prediction - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IC50_Prediction - Home"/>`);</script>
   
   
 </a></div>
@@ -171,15 +171,12 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="../intro.html">
-                    Welcome to your Jupyter Book
+                    Welcome to IC50 Prediction Book
                 </a>
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../markdown.html">Markdown Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks.html">Content with notebooks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../markdown-notebooks.html">Notebooks with MyST Markdown</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Bioactivity_prediction</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">IC50 prediction (Extract dataset)</a></li>
 </ul>
 
     </div>
@@ -234,7 +231,7 @@
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+      <li><a href="https://henryyang03.github.io/IC50_prediction_book/intro.html" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -251,7 +248,7 @@
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Data_extraction_from_ChEMBL.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://henryyang03.github.io/IC50_prediction_book/intro.html/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Data_extraction_from_ChEMBL.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -365,7 +362,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Bioactivity_prediction</h1>
+    <h1>IC50 prediction (Extract dataset)</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -375,13 +372,8 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-dataset-from-chembl-databse-which-contains-bioactivity-data-for-more-than-2-million-compounds-data-spans-over-15598-targets">Load dataset from ChEMBL Databse, which contains bioactivity data for more than 2 million compounds. Data spans over 15598 targets.</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#search-for-all-targets-alzheimer-disease">Search for All Targets (Alzheimer Disease)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selects-the-amyloid-beta-a4-protein-as-the-target-chembl2487-and-retrieve-bioactivity-data-from-this-selected-target-protein-that-use-ic50-values-we-are-interested-in-the-standard-value-column-which-is-the-potency-of-the-drug">Selects the Amyloid-beta A4 protein as the target (CHEMBL2487) and retrieve bioactivity data from this selected target protein that use IC50 values. We are interested in the standard value column, which is the potency of the drug.</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drop-the-missing-data-rows-missing-standard-value-and-turn-the-dataframe-into-csv-file">Drop the missing data rows (missing standard value) and turn the dataframe into csv file.</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pre-process-select-the-3-columns-that-we-want-and-add-another-column-for-bioactivity-level">Data pre-process, select the 3 columns that we want and add another column for bioactivity level.</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#search-for-all-targets-alzheimer-disease">Search for All Targets (Alzheimer Disease)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pre-process">Data pre-process</a></li>
 </ul>
             </nav>
         </div>
@@ -393,10 +385,9 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="bioactivity-prediction">
-<h1>Bioactivity_prediction<a class="headerlink" href="#bioactivity-prediction" title="Link to this heading">#</a></h1>
-<section id="load-dataset-from-chembl-databse-which-contains-bioactivity-data-for-more-than-2-million-compounds-data-spans-over-15598-targets">
-<h2>Load dataset from ChEMBL Databse, which contains bioactivity data for more than 2 million compounds. Data spans over 15598 targets.<a class="headerlink" href="#load-dataset-from-chembl-databse-which-contains-bioactivity-data-for-more-than-2-million-compounds-data-spans-over-15598-targets" title="Link to this heading">#</a></h2>
+  <section class="tex2jax_ignore mathjax_ignore" id="ic50-prediction-extract-dataset">
+<h1>IC50 prediction (Extract dataset)<a class="headerlink" href="#ic50-prediction-extract-dataset" title="Link to this heading">#</a></h1>
+<p>Load dataset from ChEMBL Databse, which contains bioactivity data for more than 2 million compounds. Data spans over 15598 targets.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -405,9 +396,9 @@ document.write(`
 </div>
 </div>
 </div>
-</section>
 <section id="search-for-all-targets-alzheimer-disease">
 <h2>Search for All Targets (Alzheimer Disease)<a class="headerlink" href="#search-for-all-targets-alzheimer-disease" title="Link to this heading">#</a></h2>
+<p>Found total of 6 targets.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target_result</span> <span class="o">=</span> <span class="n">new_client</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;Alzheimer&#39;</span><span class="p">)</span>
@@ -523,8 +514,7 @@ document.write(`
 </table>
 </div></div></div>
 </div>
-<section id="selects-the-amyloid-beta-a4-protein-as-the-target-chembl2487-and-retrieve-bioactivity-data-from-this-selected-target-protein-that-use-ic50-values-we-are-interested-in-the-standard-value-column-which-is-the-potency-of-the-drug">
-<h3>Selects the Amyloid-beta A4 protein as the target (CHEMBL2487) and retrieve bioactivity data from this selected target protein that use IC50 values. We are interested in the standard value column, which is the potency of the drug.<a class="headerlink" href="#selects-the-amyloid-beta-a4-protein-as-the-target-chembl2487-and-retrieve-bioactivity-data-from-this-selected-target-protein-that-use-ic50-values-we-are-interested-in-the-standard-value-column-which-is-the-potency-of-the-drug" title="Link to this heading">#</a></h3>
+<p>Selects the Amyloid-beta A4 protein as the target (CHEMBL2487) and retrieve bioactivity data from this selected target protein that use IC50 values. We are interested in the standard value column, which is the potency of the drug.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selected</span> <span class="o">=</span> <span class="n">targets</span><span class="o">.</span><span class="n">target_chembl_id</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
@@ -702,9 +692,7 @@ document.write(`
 <p>5 rows × 46 columns</p>
 </div></div></div>
 </div>
-</section>
-<section id="drop-the-missing-data-rows-missing-standard-value-and-turn-the-dataframe-into-csv-file">
-<h3>Drop the missing data rows (missing standard value) and turn the dataframe into csv file.<a class="headerlink" href="#drop-the-missing-data-rows-missing-standard-value-and-turn-the-dataframe-into-csv-file" title="Link to this heading">#</a></h3>
+<p>Drop the missing data rows (missing standard value) and turn the dataframe into csv file.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">standard_value</span><span class="o">.</span><span class="n">notna</span><span class="p">()]</span>
@@ -714,9 +702,9 @@ document.write(`
 </div>
 </div>
 </section>
-</section>
-<section id="data-pre-process-select-the-3-columns-that-we-want-and-add-another-column-for-bioactivity-level">
-<h2>Data pre-process, select the 3 columns that we want and add another column for bioactivity level.<a class="headerlink" href="#data-pre-process-select-the-3-columns-that-we-want-and-add-another-column-for-bioactivity-level" title="Link to this heading">#</a></h2>
+<section id="data-pre-process">
+<h2>Data pre-process<a class="headerlink" href="#data-pre-process" title="Link to this heading">#</a></h2>
+<p>Select the 3 columns that we want and add another column for bioactivity level.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">,</span> <span class="s1">&#39;canonical_smiles&#39;</span><span class="p">,</span> <span class="s1">&#39;standard_value&#39;</span><span class="p">]]</span>
@@ -817,12 +805,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../markdown-notebooks.html"
+       href="../intro.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Notebooks with MyST Markdown</p>
+        <p class="prev-next-title">Welcome to IC50 Prediction Book</p>
       </div>
     </a>
 </div>
@@ -841,13 +829,8 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-dataset-from-chembl-databse-which-contains-bioactivity-data-for-more-than-2-million-compounds-data-spans-over-15598-targets">Load dataset from ChEMBL Databse, which contains bioactivity data for more than 2 million compounds. Data spans over 15598 targets.</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#search-for-all-targets-alzheimer-disease">Search for All Targets (Alzheimer Disease)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selects-the-amyloid-beta-a4-protein-as-the-target-chembl2487-and-retrieve-bioactivity-data-from-this-selected-target-protein-that-use-ic50-values-we-are-interested-in-the-standard-value-column-which-is-the-potency-of-the-drug">Selects the Amyloid-beta A4 protein as the target (CHEMBL2487) and retrieve bioactivity data from this selected target protein that use IC50 values. We are interested in the standard value column, which is the potency of the drug.</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drop-the-missing-data-rows-missing-standard-value-and-turn-the-dataframe-into-csv-file">Drop the missing data rows (missing standard value) and turn the dataframe into csv file.</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pre-process-select-the-3-columns-that-we-want-and-add-another-column-for-bioactivity-level">Data pre-process, select the 3 columns that we want and add another column for bioactivity level.</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#search-for-all-targets-alzheimer-disease">Search for All Targets (Alzheimer Disease)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pre-process">Data pre-process</a></li>
 </ul>
   </nav></div>
 
@@ -862,7 +845,7 @@ document.write(`
   <div class="footer-item">
     
 <p class="component-author">
-By The Jupyter Book Community
+By Mohan Yang
 </p>
 
   </div>
