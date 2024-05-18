@@ -62,6 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Neural_Network_prediction';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Exploratory Data Analysis" href="Exploratory_Data_Analysis.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -123,8 +124,6 @@
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar">
         
 
@@ -178,9 +177,10 @@
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="Data_extraction_from_ChEMBL.html">Data Extraction from ChEMBL Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Exploratory_Data_Analysis.html">Exploratory Data Analysis</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Neural Network Prediction</a></li>
 </ul>
 
     </div>
@@ -835,7 +835,7 @@ dZ_2 = A_2 - Y \\\end{split}\]</div>
 <h2>Define Training loop<a class="headerlink" href="#define-training-loop" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
     <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span> <span class="o">=</span> <span class="n">init_param</span><span class="p">(</span><span class="n">input_size</span> <span class="o">=</span> <span class="mi">885</span><span class="p">,</span> <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="n">output_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
     
     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
@@ -864,88 +864,34 @@ dZ_2 = A_2 - Y \\\end{split}\]</div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 0, Loss: 16.215474160408263
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 0, Loss: 19.53322752570043
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 100, Loss: 1.3271608635513852
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 100, Loss: 1.3053604379629051
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 200, Loss: 1.3203846904734247
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 200, Loss: 1.3017362147972464
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 300, Loss: 1.3197234229414219
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 300, Loss: 1.2981095773489093
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 400, Loss: 1.3192783823889092
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 400, Loss: 1.2944692660832624
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 500, Loss: 1.318878618186192
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 500, Loss: 1.2908065775812898
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 600, Loss: 1.3184872469374005
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 600, Loss: 1.2871118041923082
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 700, Loss: 1.3180967051132468
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 700, Loss: 1.2833796033136433
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 800, Loss: 1.3177085263710626
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 800, Loss: 1.279599821577683
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 900, Loss: 1.3173226940965614
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1000, Loss: 1.3169356177355749
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1100, Loss: 1.3165497944284277
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1200, Loss: 1.3161655899679017
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1300, Loss: 1.3157802299107084
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1400, Loss: 1.315397080829349
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1500, Loss: 1.3150116080637775
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1600, Loss: 1.3146266361599968
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1700, Loss: 1.3142449931713218
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1800, Loss: 1.3138591953609593
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1900, Loss: 1.3134749653768645
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 2000, Loss: 1.3130937714044835
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">14</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">trained_W1</span><span class="p">,</span> <span class="n">trained_B1</span><span class="p">,</span> <span class="n">trained_W2</span><span class="p">,</span> <span class="n">trained_B2</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-
-<span class="nn">Cell In[13], line 5,</span> in <span class="ni">train</span><span class="nt">(X, Y, learning_rate, epochs)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span> <span class="o">=</span> <span class="n">init_param</span><span class="p">(</span><span class="n">input_size</span> <span class="o">=</span> <span class="mi">885</span><span class="p">,</span> <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="n">output_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
-<span class="ne">----&gt; </span><span class="mi">5</span>     <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span> <span class="o">=</span> <span class="n">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">dW1</span><span class="p">,</span> <span class="n">dB1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">dB2</span> <span class="o">=</span> <span class="n">back_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">W2</span><span class="p">)</span>
-
-<span class="nn">Cell In[9], line 2,</span> in <span class="ni">forward_prop</span><span class="nt">(X, W1, B1, W2, B2)</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">def</span> <span class="nf">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">):</span>
-<span class="ne">----&gt; </span><span class="mi">2</span>     <span class="n">Z1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">B1</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">A1</span> <span class="o">=</span> <span class="n">ReLU</span><span class="p">(</span><span class="n">Z1</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">Z2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W2</span><span class="p">,</span> <span class="n">A1</span><span class="p">)</span> <span class="o">+</span> <span class="n">B2</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 900, Loss: 1.2757640150555045
 </pre></div>
 </div>
 </div>
@@ -965,15 +911,15 @@ dZ_2 = A_2 - Y \\\end{split}\]</div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction : [4.868853   4.90793499 3.08899235 4.90793499 4.90793499 4.90793499
- 4.52871878 4.90793499 4.90793499 5.43212571 9.13570312 6.81862166
- 6.52995973 3.08899235 7.27004209 7.86382231 4.2559559  4.68993178
- 5.84571153 4.90793499 4.90793499 4.90793499 6.44453921 4.74600482
- 5.02425479 4.60958947 4.90793499 5.59741358 5.75928501 4.90793499
- 4.90793499 4.88685491 4.90793499 4.90793499 3.8579269  7.22489591
- 3.5489891  7.84751421 4.88069935 4.99797807 5.44625825 3.10741725
- 4.87880655 5.68599587 3.86445087 4.90793499 4.90793499 7.38390457
- 5.10593887 6.87896247]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction : [4.87482357 4.92331901 3.09557398 4.92331901 4.92331901 4.92331901
+ 4.55514306 4.92331901 4.92331901 5.42733867 9.12946456 6.78523428
+ 6.49672711 3.09557398 7.23893633 7.86227152 4.2960192  4.71589222
+ 5.8079007  4.92331901 4.92331901 4.92331901 6.39641101 4.76629884
+ 5.0517421  4.60670681 4.92331901 5.601574   5.74495639 4.92331901
+ 4.92331901 4.89313382 4.92331901 4.92331901 3.87192008 7.20371088
+ 3.55477797 7.82910736 4.89233873 4.9757123  5.46480299 3.1351524
+ 4.88109024 5.68783912 3.89935126 4.92331901 4.92331901 7.37832879
+ 5.09516897 6.84564387]
 Actual: [6.32239305 5.         4.82073554 6.20065945 5.48148606 5.04575749
  4.70114692 4.72746222 5.08249449 8.52287875 5.52287875 4.61618463
  5.07572071 4.92481815 8.55284197 4.39794001 4.82102305 4.00674017
@@ -983,7 +929,7 @@ Actual: [6.32239305 5.         4.82073554 6.20065945 5.48148606 5.04575749
  4.60205999 7.26760624 6.86012091 5.05256628 8.79588002 5.14752001
  3.95467702 6.07572071 3.30103    4.6476245  4.82419837 4.89962945
  4.73165609 6.65757732]
-loss : 1.189142296872018
+loss : 1.1786422443194442
 </pre></div>
 </div>
 </div>
@@ -1025,6 +971,15 @@ loss : 1.189142296872018
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="Exploratory_Data_Analysis.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Exploratory Data Analysis</p>
+      </div>
+    </a>
 </div>
                 </footer>
               
