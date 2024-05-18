@@ -60,7 +60,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Data_extraction_from_ChEMBL';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Welcome to IC50 Prediction Book" href="../intro.html" />
+    <link rel="next" title="Exploratory Data Analysis" href="Exploratory_Data_Analysis.html" />
+    <link rel="prev" title="Welcome to pIC50 Prediction Book" href="../intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -171,12 +172,13 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="../intro.html">
-                    Welcome to IC50 Prediction Book
+                    Welcome to pIC50 Prediction Book
                 </a>
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Data Extraction from ChEMBL Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Exploratory_Data_Analysis.html">Exploratory Data Analysis</a></li>
 </ul>
 
     </div>
@@ -692,10 +694,14 @@ document.write(`
 <p>5 rows × 46 columns</p>
 </div></div></div>
 </div>
-<p>Drop the missing data rows (missing standard value)</p>
+<p>Drop the missing data rows (missing standard value)
+Change the type of standard value into float
+Insuring there’s no negative value for standard value</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">standard_value</span><span class="o">.</span><span class="n">notna</span><span class="p">()]</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;standard_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;standard_value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;standard_value&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -775,7 +781,6 @@ Adds the column for the bioactivity level.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">classify_standard_value</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;active&#39;</span>
     <span class="k">elif</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">10000</span><span class="p">:</span>
@@ -941,8 +946,17 @@ Adds the column for the bioactivity level.</p>
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Welcome to IC50 Prediction Book</p>
+        <p class="prev-next-title">Welcome to pIC50 Prediction Book</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="Exploratory_Data_Analysis.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Exploratory Data Analysis</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>

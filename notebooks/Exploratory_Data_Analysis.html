@@ -171,7 +171,7 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="../intro.html">
-                    Welcome to IC50 Prediction Book
+                    Welcome to pIC50 Prediction Book
                 </a>
             </li>
         </ul>
@@ -375,6 +375,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lipinski-descriptors">Lipinski Descriptors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-descriptors">Calculate descriptors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-pic50-values">Calculate pIC50 values</a></li>
 </ul>
             </nav>
         </div>
@@ -580,6 +581,135 @@ A partition coefficient (LogP) not greater than 5.</p>
 </div></div></div>
 </div>
 </section>
+<section id="calculate-pic50-values">
+<h2>Calculate pIC50 values<a class="headerlink" href="#calculate-pic50-values" title="Link to this heading">#</a></h2>
+<p>Convert the standard value of IC50 from nM to M by multiplying 10**-9
+pIC50 = -log(IC50)</p>
+<p>Add the new column into the dataframe</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;pIC50&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;standard_value&#39;</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">10</span><span class="o">**-</span><span class="mi">9</span><span class="p">))</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>molecule_chembl_id</th>
+      <th>canonical_smiles</th>
+      <th>standard_value</th>
+      <th>bioactivity_level</th>
+      <th>mol_weight</th>
+      <th>log_p</th>
+      <th>num_h_donors</th>
+      <th>num_h_acceptors</th>
+      <th>pIC50</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CHEMBL311039</td>
+      <td>CC12CCC(C1)C(C)(C)C2NS(=O)(=O)c1ccc(F)cc1</td>
+      <td>5000.0</td>
+      <td>intermediate</td>
+      <td>311.422</td>
+      <td>3.3188</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>5.301030</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CHEMBL450926</td>
+      <td>CC12CC[C@@H](C1)C(C)(C)[C@@H]2NS(=O)(=O)c1cccs1</td>
+      <td>2700.0</td>
+      <td>intermediate</td>
+      <td>299.461</td>
+      <td>3.2412</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>5.568636</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>CHEMBL310242</td>
+      <td>CC12CC[C@@H](C1)C(C)(C)[C@@H]2NS(=O)(=O)c1ccc(...</td>
+      <td>1800.0</td>
+      <td>intermediate</td>
+      <td>311.422</td>
+      <td>3.3188</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>5.744727</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CHEMBL74874</td>
+      <td>CC12CC[C@@H](C1)C(C)(C)[C@@H]2NS(=O)(=O)c1ccc(...</td>
+      <td>11000.0</td>
+      <td>inactive</td>
+      <td>327.877</td>
+      <td>3.8331</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>4.958607</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CHEMBL75183</td>
+      <td>CC12CC[C@@H](C1)C(C)(C)[C@@H]2NS(=O)(=O)c1ccc(...</td>
+      <td>10000.0</td>
+      <td>inactive</td>
+      <td>372.328</td>
+      <td>3.9422</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>5.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Take a look at the summary statistic for pIC50</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">pIC50</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>count    1425.000000
+mean        5.711224
+std         1.303668
+min         2.781202
+25%         4.782516
+50%         5.320572
+75%         6.568636
+max         9.522879
+Name: pIC50, dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -639,6 +769,7 @@ A partition coefficient (LogP) not greater than 5.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lipinski-descriptors">Lipinski Descriptors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-descriptors">Calculate descriptors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-pic50-values">Calculate pIC50 values</a></li>
 </ul>
   </nav></div>
 
