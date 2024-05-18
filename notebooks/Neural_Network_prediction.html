@@ -387,7 +387,8 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-gradient-descent-to-update-parameters">Define Gradient descent to update parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-training-loop">Define Training loop</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starts-training">Starts training</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#with-1000-epoch-of-training-the-loss-on-the-training-set-is-0-62">With 1000 epoch of training, the loss on the training set is 0.62</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-the-training-loss">Visualize the training loss</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#with-100-epoch-of-training-the-loss-on-the-training-set-is-calculated">With 100 epoch of training, the loss on the training set is calculated</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
 </ul>
             </nav>
@@ -406,6 +407,7 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 </pre></div>
 </div>
@@ -724,9 +726,10 @@ Splitting the dataset into training and test sets.</p>
 <h2>Forward Propagation<a class="headerlink" href="#forward-propagation" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">,</span> <span class="n">dropout_rate</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
     <span class="n">Z1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">B1</span>
     <span class="n">A1</span> <span class="o">=</span> <span class="n">ReLU</span><span class="p">(</span><span class="n">Z1</span><span class="p">)</span>
+
     <span class="n">Z2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W2</span><span class="p">,</span> <span class="n">A1</span><span class="p">)</span> <span class="o">+</span> <span class="n">B2</span>
     <span class="n">A2</span> <span class="o">=</span> <span class="n">Z2</span> <span class="c1"># linear activation</span>
     <span class="k">return</span> <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span>
@@ -769,12 +772,19 @@ A2 = Z2
 <h2>Loss Function (MSE) and Back Propagation<a class="headerlink" href="#loss-function-mse-and-back-propagation" title="Link to this heading">#</a></h2>
 <div class="math notranslate nohighlight">
 \[
-Loss(A2, Y) = \frac{1}{2*2388} \sum_{i=1}^2388 (A_2 - Y) ^ 2
+Loss(A2, Y) = \frac{1}{2*2388} \sum_{i=1}^{2388} (A_2 - Y) ^ 2
 \]</div>
 <p>Gradients:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
-dZ_2 = A_2 - Y \\\end{split}\]</div>
+dZ_2 = A_2 - Y \\
+dW_2 = 1/m dZ_2 * A_1^T \\
+dB_2 = 1/m \sum_{i=1}^{2388} dZ_2 \\
+dA_1 = W_2^T * dZ_2 \\
+dZ_1 = dA_1 * dReLU(Z_1) \\
+dW_1 = 1/m dZ_1 * X^T \\
+dB_1 = 1/m \sum_{i=1}^{2388} dZ_1
+\end{split}\]</div>
 </section>
 <section id="define-derivative-of-relu-and-back-prop">
 <h2>Define derivative of ReLU and back prop<a class="headerlink" href="#define-derivative-of-relu-and-back-prop" title="Link to this heading">#</a></h2>
@@ -835,12 +845,14 @@ dZ_2 = A_2 - Y \\\end{split}\]</div>
 <h2>Define Training loop<a class="headerlink" href="#define-training-loop" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
     <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span> <span class="o">=</span> <span class="n">init_param</span><span class="p">(</span><span class="n">input_size</span> <span class="o">=</span> <span class="mi">885</span><span class="p">,</span> <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="n">output_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">loss_history</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
         <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span> <span class="o">=</span> <span class="n">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">)</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span>
+        <span class="n">loss_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
         
         
         <span class="n">dW1</span><span class="p">,</span> <span class="n">dB1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">dB2</span> <span class="o">=</span> <span class="n">back_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">W2</span><span class="p">)</span>
@@ -849,7 +861,7 @@ dZ_2 = A_2 - Y \\\end{split}\]</div>
         <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s1">, Loss: </span><span class="si">{</span><span class="n">loss</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     
-    <span class="k">return</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span>
+    <span class="k">return</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">,</span> <span class="n">loss_history</span>
 </pre></div>
 </div>
 </div>
@@ -859,46 +871,36 @@ dZ_2 = A_2 - Y \\\end{split}\]</div>
 <h2>Starts training<a class="headerlink" href="#starts-training" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trained_W1</span><span class="p">,</span> <span class="n">trained_B1</span><span class="p">,</span> <span class="n">trained_W2</span><span class="p">,</span> <span class="n">trained_B2</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trained_W1</span><span class="p">,</span> <span class="n">trained_B1</span><span class="p">,</span> <span class="n">trained_W2</span><span class="p">,</span> <span class="n">trained_B2</span><span class="p">,</span> <span class="n">loss_history</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 0, Loss: 19.53322752570043
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 100, Loss: 1.3053604379629051
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 200, Loss: 1.3017362147972464
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 300, Loss: 1.2981095773489093
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 400, Loss: 1.2944692660832624
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 500, Loss: 1.2908065775812898
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 600, Loss: 1.2871118041923082
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 700, Loss: 1.2833796033136433
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 800, Loss: 1.279599821577683
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 900, Loss: 1.2757640150555045
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 0, Loss: 13.770451905943839
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="with-1000-epoch-of-training-the-loss-on-the-training-set-is-0-62">
-<h2>With 1000 epoch of training, the loss on the training set is 0.62<a class="headerlink" href="#with-1000-epoch-of-training-the-loss-on-the-training-set-is-0-62" title="Link to this heading">#</a></h2>
+<section id="visualize-the-training-loss">
+<h2>Visualize the training loss<a class="headerlink" href="#visualize-the-training-loss" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss_history</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x30c063e60&gt;]
+</pre></div>
+</div>
+<img alt="../_images/b0663fa0686f0c3b345d952a832462a54fd928307f528ed638b571dd33595e61.png" src="../_images/b0663fa0686f0c3b345d952a832462a54fd928307f528ed638b571dd33595e61.png" />
+</div>
+</div>
+</section>
+<section id="with-100-epoch-of-training-the-loss-on-the-training-set-is-calculated">
+<h2>With 100 epoch of training, the loss on the training set is calculated<a class="headerlink" href="#with-100-epoch-of-training-the-loss-on-the-training-set-is-calculated" title="Link to this heading">#</a></h2>
 <p>Test the model on the test set</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -911,15 +913,15 @@ dZ_2 = A_2 - Y \\\end{split}\]</div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction : [4.87482357 4.92331901 3.09557398 4.92331901 4.92331901 4.92331901
- 4.55514306 4.92331901 4.92331901 5.42733867 9.12946456 6.78523428
- 6.49672711 3.09557398 7.23893633 7.86227152 4.2960192  4.71589222
- 5.8079007  4.92331901 4.92331901 4.92331901 6.39641101 4.76629884
- 5.0517421  4.60670681 4.92331901 5.601574   5.74495639 4.92331901
- 4.92331901 4.89313382 4.92331901 4.92331901 3.87192008 7.20371088
- 3.55477797 7.82910736 4.89233873 4.9757123  5.46480299 3.1351524
- 4.88109024 5.68783912 3.89935126 4.92331901 4.92331901 7.37832879
- 5.09516897 6.84564387]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction : [4.8585383  4.91174103 3.04041307 4.91174103 4.91174103 4.91174103
+ 4.51101924 4.91174103 4.91174103 5.4151146  9.19391445 6.81098993
+ 6.52341616 3.04041307 7.29755893 7.88533995 4.24162644 4.68820421
+ 5.8103433  4.91174103 4.91174103 4.91174103 6.42775448 4.74914124
+ 5.01035935 4.59720141 4.91174103 5.58005941 5.73781433 4.91174103
+ 4.91174103 4.84975153 4.91174103 4.91174103 3.78185442 7.25502009
+ 3.50986186 7.87930203 4.87311742 4.97614726 5.43175068 3.07352112
+ 4.87535784 5.63884494 3.84603319 4.91174103 4.91174103 7.37937511
+ 5.09293644 6.91137828]
 Actual: [6.32239305 5.         4.82073554 6.20065945 5.48148606 5.04575749
  4.70114692 4.72746222 5.08249449 8.52287875 5.52287875 4.61618463
  5.07572071 4.92481815 8.55284197 4.39794001 4.82102305 4.00674017
@@ -929,7 +931,7 @@ Actual: [6.32239305 5.         4.82073554 6.20065945 5.48148606 5.04575749
  4.60205999 7.26760624 6.86012091 5.05256628 8.79588002 5.14752001
  3.95467702 6.07572071 3.30103    4.6476245  4.82419837 4.89962945
  4.73165609 6.65757732]
-loss : 1.1786422443194442
+loss : 1.2182193154322447
 </pre></div>
 </div>
 </div>
@@ -937,7 +939,7 @@ loss : 1.1786422443194442
 </section>
 <section id="results">
 <h2>Results<a class="headerlink" href="#results" title="Link to this heading">#</a></h2>
-<p>With 597 samples in the test set, the total loss is 1.18</p>
+<p>With 597 samples in the test set, the total loss is around 1.2.</p>
 </section>
 </section>
 
@@ -1007,7 +1009,8 @@ loss : 1.1786422443194442
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-gradient-descent-to-update-parameters">Define Gradient descent to update parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-training-loop">Define Training loop</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starts-training">Starts training</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#with-1000-epoch-of-training-the-loss-on-the-training-set-is-0-62">With 1000 epoch of training, the loss on the training set is 0.62</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-the-training-loss">Visualize the training loss</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#with-100-epoch-of-training-the-loss-on-the-training-set-is-calculated">With 100 epoch of training, the loss on the training set is calculated</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
 </ul>
   </nav></div>
