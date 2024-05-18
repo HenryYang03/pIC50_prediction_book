@@ -1,0 +1,1111 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Neural Network Prediction &#8212; IC50_Prediction</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Neural_Network_prediction';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pIC50.png" class="logo__image only-light" alt="IC50_Prediction - Home"/>
+    <script>document.write(`<img src="../_static/pIC50.png" class="logo__image only-dark" alt="IC50_Prediction - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to pIC50 Prediction Book
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Data_extraction_from_ChEMBL.html">Data Extraction from ChEMBL Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Exploratory_Data_Analysis.html">Exploratory Data Analysis</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://henryyang03.github.io/IC50_prediction_book/intro.html" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://henryyang03.github.io/IC50_prediction_book/intro.html/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Neural_Network_prediction.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/Neural_Network_prediction.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Neural Network Prediction</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-neural-network">Building Neural Network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defines-the-input-size-hidden-size-and-output-size">Defines the input size, hidden size and output size</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-propagation">Forward Propagation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-dimensions">Model Dimensions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Forward Propagation:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loss-function-mse-and-back-propagation">Loss Function (MSE) and Back Propagation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-derivative-of-relu-and-back-prop">Define derivative of ReLU and back prop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-loss-function">Define loss function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-gradient-descent-to-update-parameters">Define Gradient descent to update parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-training-loop">Define Training loop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starts-training">Starts training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#with-1000-epoch-of-training-the-loss-on-the-training-set-is-0-62">With 1000 epoch of training, the loss on the training set is 0.62</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="neural-network-prediction">
+<h1>Neural Network Prediction<a class="headerlink" href="#neural-network-prediction" title="Link to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># read prepared data from previous notebooks</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;X.csv&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;Y.csv&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(2985, 885)
+(2985, 1)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Visualize X and Y dataset</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mol_weight</th>
+      <th>log_p</th>
+      <th>num_h_donors</th>
+      <th>num_h_acceptors</th>
+      <th>PubchemFP0</th>
+      <th>PubchemFP1</th>
+      <th>PubchemFP2</th>
+      <th>PubchemFP3</th>
+      <th>PubchemFP4</th>
+      <th>PubchemFP5</th>
+      <th>...</th>
+      <th>PubchemFP871</th>
+      <th>PubchemFP872</th>
+      <th>PubchemFP873</th>
+      <th>PubchemFP874</th>
+      <th>PubchemFP875</th>
+      <th>PubchemFP876</th>
+      <th>PubchemFP877</th>
+      <th>PubchemFP878</th>
+      <th>PubchemFP879</th>
+      <th>PubchemFP880</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>311.422</td>
+      <td>3.3188</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>299.461</td>
+      <td>3.2412</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>311.422</td>
+      <td>3.3188</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>327.877</td>
+      <td>3.8331</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>372.328</td>
+      <td>3.9422</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 885 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Y</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pIC50</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5.301030</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>5.568636</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>5.744727</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4.958607</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="building-neural-network">
+<h2>Building Neural Network<a class="headerlink" href="#building-neural-network" title="Link to this heading">#</a></h2>
+<p>Train Test Split
+Splitting the dataset into training and test sets.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get 80% of the dataset as the training set. Put the remaining 20% as the test set: x_test and y_test.</span>
+<span class="n">x_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Transpose the dataset</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="n">y_train</span> <span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+<span class="c1"># Every column is one sample of chemical compound with a dimension of 885</span>
+<span class="c1"># There are in total 2388 training samples</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(885, 2388)
+(1, 2388)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="defines-the-input-size-hidden-size-and-output-size">
+<h2>Defines the input size, hidden size and output size<a class="headerlink" href="#defines-the-input-size-hidden-size-and-output-size" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">input_size</span> <span class="o">=</span> <span class="mi">885</span>
+<span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">output_size</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Initialize parameters</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">init_param</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">output_size</span><span class="p">):</span>
+    <span class="n">W1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">input_size</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span>
+    <span class="n">b1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span>
+    <span class="n">W2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">output_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span>
+    <span class="n">b2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">output_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span>
+    <span class="k">return</span> <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Define Relu</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ReLU</span><span class="p">(</span><span class="n">Z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="forward-propagation">
+<h2>Forward Propagation<a class="headerlink" href="#forward-propagation" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">):</span>
+    <span class="n">Z1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">B1</span>
+    <span class="n">A1</span> <span class="o">=</span> <span class="n">ReLU</span><span class="p">(</span><span class="n">Z1</span><span class="p">)</span>
+    <span class="n">Z2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W2</span><span class="p">,</span> <span class="n">A1</span><span class="p">)</span> <span class="o">+</span> <span class="n">B2</span>
+    <span class="n">A2</span> <span class="o">=</span> <span class="n">Z2</span> <span class="c1"># linear activation</span>
+    <span class="k">return</span> <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="model-dimensions">
+<h2>Model Dimensions<a class="headerlink" href="#model-dimensions" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+W1:128*885 \\
+X:885*2388 \\
+B1:128*1 \\
+Z1:128*2388 \\
+A1:128*2388 \\
+W2:1*128 \\ 
+B2: 1*1 \\
+Z2: 1*2388 \\ 
+A2: 1*2388 \\ 
+Y:1*2388
+\end{split}\]</div>
+</section>
+<section id="id1">
+<h2>Forward Propagation:<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+Z1 = W1*X + B1
+\\
+A1 = ReLU(Z1)
+\\
+\\
+Z2 = W2*A1 + B2
+\\
+A2 = Z2
+\end{split}\]</div>
+</section>
+<section id="loss-function-mse-and-back-propagation">
+<h2>Loss Function (MSE) and Back Propagation<a class="headerlink" href="#loss-function-mse-and-back-propagation" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[
+Loss(A2, Y) = \frac{1}{2*2388} \sum_{i=1}^2388 (A_2 - Y) ^ 2
+\]</div>
+<p>Gradients:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+dZ_2 = A_2 - Y \\\end{split}\]</div>
+</section>
+<section id="define-derivative-of-relu-and-back-prop">
+<h2>Define derivative of ReLU and back prop<a class="headerlink" href="#define-derivative-of-relu-and-back-prop" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">deriv_ReLU</span><span class="p">(</span><span class="n">Z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Z</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">back_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">W2</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1"># Output layer gradients</span>
+    <span class="n">dZ2</span> <span class="o">=</span> <span class="n">A2</span> <span class="o">-</span> <span class="n">Y</span>
+    <span class="n">dW2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dZ2</span><span class="p">,</span> <span class="n">A1</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">dB2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dZ2</span><span class="p">)</span>
+    
+    <span class="c1"># Hidden layer gradients</span>
+    <span class="n">dA1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W2</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">dZ2</span><span class="p">)</span>
+    <span class="n">dZ1</span> <span class="o">=</span> <span class="n">dA1</span> <span class="o">*</span> <span class="n">deriv_ReLU</span><span class="p">(</span><span class="n">Z1</span><span class="p">)</span>
+    <span class="n">dW1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dZ1</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">dB1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dZ1</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">dW1</span><span class="p">,</span> <span class="n">dB1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">dB2</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="define-loss-function">
+<h2>Define loss function<a class="headerlink" href="#define-loss-function" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">A2</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">A2</span> <span class="o">-</span> <span class="n">Y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">loss</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="define-gradient-descent-to-update-parameters">
+<h2>Define Gradient descent to update parameters<a class="headerlink" href="#define-gradient-descent-to-update-parameters" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_parameters</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">,</span> <span class="n">dW1</span><span class="p">,</span> <span class="n">dB1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">dB2</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">):</span>
+    <span class="n">W1</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">dW1</span>
+    <span class="n">B1</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">dB1</span>
+    <span class="n">W2</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">dW2</span>
+    <span class="n">B2</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">dB2</span>
+    <span class="k">return</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="define-training-loop">
+<h2>Define Training loop<a class="headerlink" href="#define-training-loop" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+    <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span> <span class="o">=</span> <span class="n">init_param</span><span class="p">(</span><span class="n">input_size</span> <span class="o">=</span> <span class="mi">885</span><span class="p">,</span> <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="n">output_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+        <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span> <span class="o">=</span> <span class="n">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span>
+        
+        
+        <span class="n">dW1</span><span class="p">,</span> <span class="n">dB1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">dB2</span> <span class="o">=</span> <span class="n">back_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">W2</span><span class="p">)</span>
+        <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span> <span class="o">=</span> <span class="n">update_parameters</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">,</span> <span class="n">dW1</span><span class="p">,</span> <span class="n">dB1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">dB2</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s1">, Loss: </span><span class="si">{</span><span class="n">loss</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="starts-training">
+<h2>Starts training<a class="headerlink" href="#starts-training" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trained_W1</span><span class="p">,</span> <span class="n">trained_B1</span><span class="p">,</span> <span class="n">trained_W2</span><span class="p">,</span> <span class="n">trained_B2</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 0, Loss: 16.215474160408263
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 100, Loss: 1.3271608635513852
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 200, Loss: 1.3203846904734247
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 300, Loss: 1.3197234229414219
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 400, Loss: 1.3192783823889092
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 500, Loss: 1.318878618186192
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 600, Loss: 1.3184872469374005
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 700, Loss: 1.3180967051132468
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 800, Loss: 1.3177085263710626
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 900, Loss: 1.3173226940965614
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1000, Loss: 1.3169356177355749
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1100, Loss: 1.3165497944284277
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1200, Loss: 1.3161655899679017
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1300, Loss: 1.3157802299107084
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1400, Loss: 1.315397080829349
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1500, Loss: 1.3150116080637775
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1600, Loss: 1.3146266361599968
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1700, Loss: 1.3142449931713218
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1800, Loss: 1.3138591953609593
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1900, Loss: 1.3134749653768645
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 2000, Loss: 1.3130937714044835
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">14</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">trained_W1</span><span class="p">,</span> <span class="n">trained_B1</span><span class="p">,</span> <span class="n">trained_W2</span><span class="p">,</span> <span class="n">trained_B2</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="nn">Cell In[13], line 5,</span> in <span class="ni">train</span><span class="nt">(X, Y, learning_rate, epochs)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span> <span class="o">=</span> <span class="n">init_param</span><span class="p">(</span><span class="n">input_size</span> <span class="o">=</span> <span class="mi">885</span><span class="p">,</span> <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="n">output_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+<span class="ne">----&gt; </span><span class="mi">5</span>     <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span> <span class="o">=</span> <span class="n">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">dW1</span><span class="p">,</span> <span class="n">dB1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">dB2</span> <span class="o">=</span> <span class="n">back_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">W2</span><span class="p">)</span>
+
+<span class="nn">Cell In[9], line 2,</span> in <span class="ni">forward_prop</span><span class="nt">(X, W1, B1, W2, B2)</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">def</span> <span class="nf">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">):</span>
+<span class="ne">----&gt; </span><span class="mi">2</span>     <span class="n">Z1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">B1</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">A1</span> <span class="o">=</span> <span class="n">ReLU</span><span class="p">(</span><span class="n">Z1</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">Z2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W2</span><span class="p">,</span> <span class="n">A1</span><span class="p">)</span> <span class="o">+</span> <span class="n">B2</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="with-1000-epoch-of-training-the-loss-on-the-training-set-is-0-62">
+<h2>With 1000 epoch of training, the loss on the training set is 0.62<a class="headerlink" href="#with-1000-epoch-of-training-the-loss-on-the-training-set-is-0-62" title="Link to this heading">#</a></h2>
+<p>Test the model on the test set</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">predicted_A2</span> <span class="o">=</span> <span class="n">forward_prop</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">trained_W1</span><span class="p">,</span> <span class="n">trained_B1</span><span class="p">,</span> <span class="n">trained_W2</span><span class="p">,</span> <span class="n">trained_B2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Prediction : </span><span class="si">{</span><span class="n">predicted_A2</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="mi">50</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Actual: </span><span class="si">{</span><span class="n">y_test</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="mi">50</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predicted_A2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loss : </span><span class="si">{</span><span class="n">loss</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction : [4.868853   4.90793499 3.08899235 4.90793499 4.90793499 4.90793499
+ 4.52871878 4.90793499 4.90793499 5.43212571 9.13570312 6.81862166
+ 6.52995973 3.08899235 7.27004209 7.86382231 4.2559559  4.68993178
+ 5.84571153 4.90793499 4.90793499 4.90793499 6.44453921 4.74600482
+ 5.02425479 4.60958947 4.90793499 5.59741358 5.75928501 4.90793499
+ 4.90793499 4.88685491 4.90793499 4.90793499 3.8579269  7.22489591
+ 3.5489891  7.84751421 4.88069935 4.99797807 5.44625825 3.10741725
+ 4.87880655 5.68599587 3.86445087 4.90793499 4.90793499 7.38390457
+ 5.10593887 6.87896247]
+Actual: [6.32239305 5.         4.82073554 6.20065945 5.48148606 5.04575749
+ 4.70114692 4.72746222 5.08249449 8.52287875 5.52287875 4.61618463
+ 5.07572071 4.92481815 8.55284197 4.39794001 4.82102305 4.00674017
+ 5.95860731 5.46852108 5.1948391  4.78914663 5.         4.09151498
+ 4.85387196 4.2756422  4.69897    7.25289907 6.09691001 4.66134433
+ 4.69897    5.         4.73873713 4.73873713 7.49485002 5.
+ 4.60205999 7.26760624 6.86012091 5.05256628 8.79588002 5.14752001
+ 3.95467702 6.07572071 3.30103    4.6476245  4.82419837 4.89962945
+ 4.73165609 6.65757732]
+loss : 1.189142296872018
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Link to this heading">#</a></h2>
+<p>With 597 samples in the test set, the total loss is 1.18</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-neural-network">Building Neural Network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defines-the-input-size-hidden-size-and-output-size">Defines the input size, hidden size and output size</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-propagation">Forward Propagation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-dimensions">Model Dimensions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Forward Propagation:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loss-function-mse-and-back-propagation">Loss Function (MSE) and Back Propagation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-derivative-of-relu-and-back-prop">Define derivative of ReLU and back prop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-loss-function">Define loss function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-gradient-descent-to-update-parameters">Define Gradient descent to update parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-training-loop">Define Training loop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starts-training">Starts training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#with-1000-epoch-of-training-the-loss-on-the-training-set-is-0-62">With 1000 epoch of training, the loss on the training set is 0.62</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Mohan Yang
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
