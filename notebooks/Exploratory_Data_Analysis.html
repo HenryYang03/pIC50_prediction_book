@@ -374,8 +374,13 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lipinski-descriptors">Lipinski Descriptors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-descriptors">Calculate descriptors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-lipinski-descriptors">Calculate lipinski descriptors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-pic50-values">Calculate pIC50 values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-molecule-descriptors-from-padel">Calculate Molecule descriptors from PaDEL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Exploratory Data Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-statistic-for-lipinski-descriptors">Summary statistic for lipinski descriptors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-statistic-for-padel-descriptors">Summary statistic for PaDEL descriptors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-model-input-and-target">Prepare Model input and target</a></li>
 </ul>
             </nav>
         </div>
@@ -397,6 +402,9 @@ document.write(`
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">Descriptors</span><span class="p">,</span> <span class="n">Lipinski</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="c1"># import the dataset from previous notebook:</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;bioactivity_data.csv&#39;</span><span class="p">)</span>
@@ -413,8 +421,8 @@ No more than 10 hydrogen bond acceptors (the sum of Os and Ns).
 A molecular weight less than 500 daltons.
 A partition coefficient (LogP) not greater than 5.</p>
 </section>
-<section id="calculate-descriptors">
-<h2>Calculate descriptors<a class="headerlink" href="#calculate-descriptors" title="Link to this heading">#</a></h2>
+<section id="calculate-lipinski-descriptors">
+<h2>Calculate lipinski descriptors<a class="headerlink" href="#calculate-lipinski-descriptors" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calculate_lipinski</span><span class="p">(</span><span class="n">smiles</span><span class="p">):</span>
@@ -688,6 +696,882 @@ pIC50 = -log(IC50)</p>
 </table>
 </div></div></div>
 </div>
+</section>
+<section id="calculate-molecule-descriptors-from-padel">
+<h2>Calculate Molecule descriptors from PaDEL<a class="headerlink" href="#calculate-molecule-descriptors-from-padel" title="Link to this heading">#</a></h2>
+<p>PaDEL descriptors capture a wide range of molecular properties and characteristics, including physicochemical properties, topological indices, and geometric descriptors.</p>
+<p>First we need a smi file in order to run to PaDEL descriptors.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;canonical_smiles&#39;</span><span class="p">,</span> <span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">]]</span>
+<span class="n">df1</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;input.smi&#39;</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can utilize subprocess to run the PaDEL-Descriptor.jar to obtain the results</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calculate_padel_descriptors</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">padel_jar</span><span class="o">=</span><span class="s1">&#39;PaDEL-Descriptor/PaDEL-Descriptor.jar&#39;</span><span class="p">):</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;java&#39;</span><span class="p">,</span> <span class="s1">&#39;-jar&#39;</span><span class="p">,</span> <span class="n">padel_jar</span><span class="p">,</span>
+        <span class="s1">&#39;-removesalt&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;-standardizenitro&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;-fingerprints&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;-descriptortypes&#39;</span><span class="p">,</span> <span class="s1">&#39;PaDEL-Descriptor/descriptors.xml&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;-dir&#39;</span><span class="p">,</span> <span class="n">input_file</span><span class="p">,</span>
+        <span class="s1">&#39;-file&#39;</span><span class="p">,</span> <span class="n">output_file</span>
+    <span class="p">]</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+<span class="n">input_file</span> <span class="o">=</span> <span class="s1">&#39;input.smi&#39;</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="s1">&#39;output.csv&#39;</span>
+<span class="n">calculate_padel_descriptors</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL311039 in input.smi (1/1425). 
+Processing CHEMBL450926 in input.smi (2/1425). 
+Processing CHEMBL310242 in input.smi (3/1425). 
+Processing CHEMBL74874 in input.smi (4/1425). 
+Processing CHEMBL75183 in input.smi (5/1425). 
+Processing CHEMBL563 in input.smi (6/1425). 
+Processing CHEMBL196279 in input.smi (7/1425). 
+Processing CHEMBL195970 in input.smi (8/1425). 
+Processing CHEMBL195970 in input.smi (9/1425). 
+Processing CHEMBL264006 in input.smi (10/1425). 
+Processing CHEMBL193971 in input.smi (12/1425). 
+Processing CHEMBL264006 in input.smi (11/1425). 
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL196945 in input.smi (21/1425). Average speed: 5.40 s/mol.
+Processing CHEMBL194274 in input.smi (13/1425). Average speed: 5.30 s/mol.
+Processing CHEMBL196945 in input.smi (20/1425). Average speed: 5.39 s/mol.
+Processing CHEMBL196946 in input.smi (22/1425). Average speed: 5.41 s/mol.
+Processing CHEMBL196246 in input.smi (18/1425). Average speed: 5.35 s/mol.
+Processing CHEMBL196322 in input.smi (15/1425). Average speed: 5.35 s/mol.
+Processing CHEMBL380778 in input.smi (16/1425). Average speed: 5.35 s/mol.
+Processing CHEMBL196321 in input.smi (14/1425). Average speed: 5.33 s/mol.
+Processing CHEMBL197202 in input.smi (17/1425). Average speed: 5.35 s/mol.
+Processing CHEMBL196246 in input.smi (19/1425). Average speed: 5.39 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL372751 in input.smi (24/1425). Average speed: 1.36 s/mol.
+Processing CHEMBL372751 in input.smi (23/1425). Average speed: 2.73 s/mol.
+Processing CHEMBL194692 in input.smi (25/1425). Average speed: 0.52 s/mol.
+Processing CHEMBL196947 in input.smi (26/1425). Average speed: 0.48 s/mol.
+Processing CHEMBL196947 in input.smi (27/1425). Average speed: 0.45 s/mol.
+Processing CHEMBL372846 in input.smi (28/1425). Average speed: 0.45 s/mol.
+Processing CHEMBL427548 in input.smi (30/1425). Average speed: 0.40 s/mol.
+Processing CHEMBL197140 in input.smi (31/1425). Average speed: 0.40 s/mol.
+Processing CHEMBL372846 in input.smi (29/1425). Average speed: 0.40 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL382721 in input.smi (32/1425). Average speed: 0.34 s/mol.
+Processing CHEMBL436483 in input.smi (33/1425). Average speed: 0.34 s/mol.
+Processing CHEMBL196070 in input.smi (34/1425). Average speed: 0.34 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL193900 in input.smi (35/1425). Average speed: 0.30 s/mol.
+Processing CHEMBL193900 in input.smi (36/1425). Average speed: 0.30 s/mol.
+Processing CHEMBL194020 in input.smi (37/1425). Average speed: 0.31 s/mol.
+Processing CHEMBL190083 in input.smi (38/1425). Average speed: 0.28 s/mol.
+Processing CHEMBL200116 in input.smi (39/1425). Average speed: 0.28 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL202877 in input.smi (41/1425). Average speed: 0.27 s/mol.
+Processing CHEMBL199946 in input.smi (40/1425). Average speed: 0.27 s/mol.
+Processing CHEMBL425031 in input.smi (42/1425). Average speed: 0.25 s/mol.
+Processing CHEMBL200014 in input.smi (43/1425). Average speed: 0.25 s/mol.
+Processing CHEMBL204443 in input.smi (48/1425). Average speed: 0.25 s/mol.
+Processing CHEMBL204357 in input.smi (46/1425). Average speed: 0.25 s/mol.
+Processing CHEMBL200077 in input.smi (45/1425). Average speed: 0.25 s/mol.
+Processing CHEMBL202507 in input.smi (44/1425). Average speed: 0.25 s/mol.
+Processing CHEMBL206766 in input.smi (47/1425). Average speed: 0.25 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL381336 in input.smi (49/1425). Average speed: 0.21 s/mol.
+Processing CHEMBL205400 in input.smi (50/1425). Average speed: 0.21 s/mol.
+Processing CHEMBL205714 in input.smi (51/1425). Average speed: 0.22 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL208230 in input.smi (52/1425). Average speed: 0.22 s/mol.
+Processing CHEMBL424684 in input.smi (53/1425). Average speed: 0.21 s/mol.
+Processing CHEMBL274414 in input.smi (54/1425). Average speed: 0.21 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL208504 in input.smi (55/1425). Average speed: 0.21 s/mol.
+Processing CHEMBL205970 in input.smi (56/1425). Average speed: 0.20 s/mol.
+Processing CHEMBL410532 in input.smi (57/1425). Average speed: 0.20 s/mol.
+Processing CHEMBL208350 in input.smi (58/1425). Average speed: 0.20 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL205907 in input.smi (60/1425). Average speed: 0.19 s/mol.
+Processing CHEMBL382880 in input.smi (59/1425). Average speed: 0.19 s/mol.
+Processing CHEMBL231446 in input.smi (61/1425). Average speed: 0.19 s/mol.
+Processing CHEMBL396543 in input.smi (62/1425). Average speed: 0.19 s/mol.
+Processing CHEMBL231548 in input.smi (63/1425). Average speed: 0.19 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL231547 in input.smi (64/1425). Average speed: 0.18 s/mol.
+Processing CHEMBL231449 in input.smi (65/1425). Average speed: 0.18 s/mol.
+Processing CHEMBL231448 in input.smi (66/1425). Average speed: 0.18 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL396542 in input.smi (67/1425). Average speed: 0.18 s/mol.
+Processing CHEMBL231351 in input.smi (68/1425). Average speed: 0.18 s/mol.
+Processing CHEMBL395313 in input.smi (69/1425). Average speed: 0.17 s/mol.
+Processing CHEMBL231250 in input.smi (70/1425). Average speed: 0.17 s/mol.
+Processing CHEMBL231248 in input.smi (71/1425). Average speed: 0.17 s/mol.
+Processing CHEMBL395312 in input.smi (72/1425). Average speed: 0.17 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL390889 in input.smi (73/1425). Average speed: 0.16 s/mol.
+Processing CHEMBL231647 in input.smi (74/1425). Average speed: 0.16 s/mol.
+Processing CHEMBL231545 in input.smi (75/1425). Average speed: 0.16 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL231035 in input.smi (76/1425). Average speed: 0.16 s/mol.
+Processing CHEMBL230931 in input.smi (77/1425). Average speed: 0.16 s/mol.
+Processing CHEMBL425304 in input.smi (78/1425). Average speed: 0.16 s/mol.
+Processing CHEMBL231125 in input.smi (79/1425). Average speed: 0.15 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL390478 in input.smi (80/1425). Average speed: 0.15 s/mol.
+Processing CHEMBL231544 in input.smi (81/1425). Average speed: 0.15 s/mol.
+Processing CHEMBL389549 in input.smi (82/1425). Average speed: 0.15 s/mol.
+Processing CHEMBL231447 in input.smi (83/1425). Average speed: 0.15 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL240055 in input.smi (84/1425). Average speed: 0.15 s/mol.
+Processing CHEMBL240286 in input.smi (85/1425). Average speed: 0.15 s/mol.
+Processing CHEMBL240285 in input.smi (86/1425). Average speed: 0.15 s/mol.
+Processing CHEMBL398395 in input.smi (87/1425). Average speed: 0.15 s/mol.
+Processing CHEMBL240284 in input.smi (88/1425). Average speed: 0.14 s/mol.
+Processing CHEMBL240071 in input.smi (89/1425). Average speed: 0.14 s/mol.
+Processing CHEMBL240070 in input.smi (90/1425). Average speed: 0.14 s/mol.
+Processing CHEMBL240069 in input.smi (91/1425). Average speed: 0.14 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL442801 in input.smi (92/1425). Average speed: 0.14 s/mol.
+Processing CHEMBL239859 in input.smi (93/1425). Average speed: 0.14 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL239858 in input.smi (94/1425). Average speed: 0.14 s/mol.
+Processing CHEMBL239629 in input.smi (96/1425). Average speed: 0.14 s/mol.
+Processing CHEMBL400420 in input.smi (95/1425). Average speed: 0.14 s/mol.
+Processing CHEMBL393941 in input.smi (97/1425). Average speed: 0.13 s/mol.
+Processing CHEMBL236192 in input.smi (98/1425). Average speed: 0.13 s/mol.
+Processing CHEMBL429448 in input.smi (99/1425). Average speed: 0.13 s/mol.
+Processing CHEMBL236191 in input.smi (100/1425). Average speed: 0.13 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL236190 in input.smi (101/1425). Average speed: 0.13 s/mol.
+Processing CHEMBL236189 in input.smi (102/1425). Average speed: 0.13 s/mol.
+Processing CHEMBL236188 in input.smi (103/1425). Average speed: 0.13 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL236187 in input.smi (104/1425). Average speed: 0.13 s/mol.
+Processing CHEMBL236186 in input.smi (105/1425). Average speed: 0.13 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL236185 in input.smi (106/1425). Average speed: 0.13 s/mol.
+Processing CHEMBL392060 in input.smi (107/1425). Average speed: 0.13 s/mol.
+Processing CHEMBL236184 in input.smi (108/1425). Average speed: 0.13 s/mol.
+Processing CHEMBL236183 in input.smi (109/1425). Average speed: 0.13 s/mol.
+Processing CHEMBL392059 in input.smi (110/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL236182 in input.smi (111/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL394132 in input.smi (112/1425). Average speed: 0.12 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL238271 in input.smi (113/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL392144 in input.smi (114/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL236196 in input.smi (115/1425). Average speed: 0.12 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL429449 in input.smi (116/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL236195 in input.smi (117/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL236193 in input.smi (118/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL392144 in input.smi (119/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL393941 in input.smi (120/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL236192 in input.smi (121/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL429448 in input.smi (122/1425). Average speed: 0.12 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL236190 in input.smi (123/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL236188 in input.smi (124/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL236185 in input.smi (126/1425). Average speed: 0.12 s/mol.
+Processing CHEMBL236187 in input.smi (125/1425). Average speed: 0.12 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL392060 in input.smi (127/1425). Average speed: 0.12 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL236184 in input.smi (128/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL236183 in input.smi (129/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL392059 in input.smi (130/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL236182 in input.smi (131/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL394132 in input.smi (132/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL238271 in input.smi (133/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL392878 in input.smi (134/1425). Average speed: 0.11 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL418455 in input.smi (135/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL81880 in input.smi (136/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL116438 in input.smi (137/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL245479 in input.smi (139/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL245688 in input.smi (138/1425). Average speed: 0.11 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL245478 in input.smi (140/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL245477 in input.smi (141/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL245476 in input.smi (142/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL396917 in input.smi (143/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL248339 in input.smi (144/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL248338 in input.smi (145/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL248337 in input.smi (146/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL248133 in input.smi (147/1425). Average speed: 0.11 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL248132 in input.smi (148/1425). Average speed: 0.10 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL248131 in input.smi (149/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL247932 in input.smi (150/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL247930 in input.smi (152/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL247931 in input.smi (151/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL247728 in input.smi (153/1425). Average speed: 0.11 s/mol.
+Processing CHEMBL247727 in input.smi (154/1425). Average speed: 0.10 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL247726 in input.smi (155/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL247530 in input.smi (156/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL427878 in input.smi (157/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL247328 in input.smi (158/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL247929 in input.smi (159/1425). Average speed: 0.10 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL391205 in input.smi (161/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL247927 in input.smi (160/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL247725 in input.smi (162/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL247674 in input.smi (163/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL247524 in input.smi (164/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL427877 in input.smi (165/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL248327 in input.smi (167/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL394713 in input.smi (166/1425). Average speed: 0.10 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL248122 in input.smi (168/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL450553 in input.smi (169/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL492216 in input.smi (170/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL492217 in input.smi (171/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL491203 in input.smi (172/1425). Average speed: 0.10 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL509088 in input.smi (173/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL489978 in input.smi (174/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL446870 in input.smi (175/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL489979 in input.smi (176/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL524114 in input.smi (177/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL524141 in input.smi (178/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL443097 in input.smi (179/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL491406 in input.smi (180/1425). Average speed: 0.10 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL491407 in input.smi (181/1425). Average speed: 0.10 s/mol.
+Processing CHEMBL490798 in input.smi (182/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL490799 in input.smi (183/1425). Average speed: 0.09 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL492023 in input.smi (184/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL492024 in input.smi (185/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL444393 in input.smi (187/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL523824 in input.smi (186/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL490808 in input.smi (188/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL490806 in input.smi (189/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL489994 in input.smi (190/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL489792 in input.smi (191/1425). Average speed: 0.09 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL521929 in input.smi (192/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL116438 in input.smi (193/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL418455 in input.smi (194/1425). Average speed: 0.09 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL515387 in input.smi (195/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1788111 in input.smi (196/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1788121 in input.smi (197/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1744459 in input.smi (198/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1744460 in input.smi (199/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1082545 in input.smi (200/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1082546 in input.smi (201/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1088617 in input.smi (202/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1077196 in input.smi (203/1425). Average speed: 0.09 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL1087548 in input.smi (204/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1744461 in input.smi (206/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1077208 in input.smi (205/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1744462 in input.smi (207/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1082889 in input.smi (208/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1744463 in input.smi (209/1425). Average speed: 0.09 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL1083207 in input.smi (210/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1744464 in input.smi (211/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1084943 in input.smi (212/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1084944 in input.smi (213/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1084945 in input.smi (214/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL1084946 in input.smi (215/1425). Average speed: 0.09 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL570378 in input.smi (217/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL2048299 in input.smi (218/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL93124 in input.smi (216/1425). Average speed: 0.09 s/mol.
+Processing CHEMBL2048300 in input.smi (219/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048301 in input.smi (220/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048302 in input.smi (221/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048303 in input.smi (222/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL579205 in input.smi (223/1425). Average speed: 0.08 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2048304 in input.smi (224/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048305 in input.smi (225/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048306 in input.smi (226/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048307 in input.smi (227/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048308 in input.smi (228/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048310 in input.smi (230/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048309 in input.smi (229/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048312 in input.smi (232/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048311 in input.smi (231/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048313 in input.smi (233/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2048314 in input.smi (234/1425). Average speed: 0.08 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2059203 in input.smi (235/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2059204 in input.smi (236/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2059205 in input.smi (237/1425). Average speed: 0.08 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2059206 in input.smi (238/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2059212 in input.smi (239/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2059218 in input.smi (240/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2059388 in input.smi (241/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2059391 in input.smi (242/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2059393 in input.smi (243/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2063873 in input.smi (244/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2063873 in input.smi (245/1425). Average speed: 0.08 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2063874 in input.smi (246/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2063874 in input.smi (247/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL465398 in input.smi (248/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL145 in input.smi (249/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL27246 in input.smi (250/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL284616 in input.smi (251/1425). Average speed: 0.08 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL416955 in input.smi (252/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL249447 in input.smi (253/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL249448 in input.smi (254/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL177126 in input.smi (255/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2146607 in input.smi (256/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL499997 in input.smi (257/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2179242 in input.smi (260/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2146608 in input.smi (258/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2179241 in input.smi (259/1425). Average speed: 0.08 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2179243 in input.smi (261/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL1458517 in input.smi (262/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203392 in input.smi (263/1425). Average speed: 0.08 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2203391 in input.smi (264/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203390 in input.smi (265/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203389 in input.smi (266/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203388 in input.smi (267/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203387 in input.smi (268/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203386 in input.smi (269/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203385 in input.smi (270/1425). Average speed: 0.08 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2203384 in input.smi (271/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203383 in input.smi (272/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203382 in input.smi (273/1425). Average speed: 0.08 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2203381 in input.smi (274/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203380 in input.smi (275/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203379 in input.smi (276/1425). Average speed: 0.08 s/mol.
+Processing CHEMBL2203378 in input.smi (277/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2203288 in input.smi (278/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2337291 in input.smi (279/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2337290 in input.smi (280/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2337293 in input.smi (281/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2381403 in input.smi (282/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2381384 in input.smi (283/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2381385 in input.smi (284/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2381402 in input.smi (285/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2381403 in input.smi (286/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2381402 in input.smi (287/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2381385 in input.smi (289/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2381384 in input.smi (288/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2381386 in input.smi (290/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2381401 in input.smi (291/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL247932 in input.smi (292/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL723 in input.smi (293/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2386874 in input.smi (294/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2386881 in input.smi (295/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL497 in input.smi (296/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL297453 in input.smi (297/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL468154 in input.smi (298/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL149082 in input.smi (299/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL165 in input.smi (300/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL116438 in input.smi (301/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2402063 in input.smi (302/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2402075 in input.smi (303/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2402074 in input.smi (304/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2402067 in input.smi (305/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2402161 in input.smi (306/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2402160 in input.smi (307/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2402159 in input.smi (308/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2402158 in input.smi (309/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2402157 in input.smi (310/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2402163 in input.smi (311/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2402162 in input.smi (312/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL129795 in input.smi (313/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL165 in input.smi (314/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408097 in input.smi (315/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408096 in input.smi (316/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408095 in input.smi (317/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL260867 in input.smi (318/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL258752 in input.smi (319/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408094 in input.smi (320/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL229907 in input.smi (321/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408093 in input.smi (322/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408092 in input.smi (323/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408091 in input.smi (324/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2407101 in input.smi (325/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408265 in input.smi (326/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408263 in input.smi (328/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408264 in input.smi (327/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2408262 in input.smi (329/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408261 in input.smi (330/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408106 in input.smi (331/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408105 in input.smi (332/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408104 in input.smi (333/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2408103 in input.smi (334/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408102 in input.smi (335/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408101 in input.smi (336/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2408100 in input.smi (337/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408099 in input.smi (338/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL573 in input.smi (340/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2408098 in input.smi (339/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL858 in input.smi (341/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425961 in input.smi (342/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2425960 in input.smi (343/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425959 in input.smi (344/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425958 in input.smi (345/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425957 in input.smi (346/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425956 in input.smi (347/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425955 in input.smi (348/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425954 in input.smi (349/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2425953 in input.smi (350/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL573 in input.smi (351/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL858 in input.smi (352/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425961 in input.smi (353/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425960 in input.smi (354/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2425959 in input.smi (355/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425958 in input.smi (356/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425957 in input.smi (357/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425956 in input.smi (358/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425954 in input.smi (360/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425955 in input.smi (359/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2425953 in input.smi (361/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL116438 in input.smi (362/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436692 in input.smi (363/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2436691 in input.smi (364/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436690 in input.smi (365/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436704 in input.smi (367/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436703 in input.smi (368/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436710 in input.smi (366/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436701 in input.smi (370/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436699 in input.smi (372/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436702 in input.smi (369/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436700 in input.smi (371/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2436698 in input.smi (373/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436697 in input.smi (374/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436696 in input.smi (375/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2436695 in input.smi (376/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL2436694 in input.smi (377/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL2436693 in input.smi (378/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3087683 in input.smi (379/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3087680 in input.smi (380/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3087679 in input.smi (381/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3087676 in input.smi (383/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3087677 in input.smi (382/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3087675 in input.smi (384/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL231160 in input.smi (386/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3099500 in input.smi (387/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3087674 in input.smi (385/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL541265 in input.smi (388/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL541265 in input.smi (389/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3235503 in input.smi (390/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3286981 in input.smi (391/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL3286982 in input.smi (392/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3286983 in input.smi (393/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3286984 in input.smi (394/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL3286985 in input.smi (395/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3286986 in input.smi (396/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL3286988 in input.smi (398/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3286987 in input.smi (397/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3286989 in input.smi (399/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3286990 in input.smi (400/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL191083 in input.smi (401/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330737 in input.smi (402/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL3330739 in input.smi (404/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330738 in input.smi (403/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330740 in input.smi (405/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330741 in input.smi (406/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330742 in input.smi (407/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL3330743 in input.smi (408/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330744 in input.smi (409/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330745 in input.smi (410/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL3330746 in input.smi (411/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330747 in input.smi (412/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330748 in input.smi (413/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330749 in input.smi (414/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330750 in input.smi (415/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330751 in input.smi (416/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL3330752 in input.smi (417/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330753 in input.smi (418/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330754 in input.smi (419/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3330735 in input.smi (420/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL3330736 in input.smi (421/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL164 in input.smi (422/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL253570 in input.smi (423/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3326698 in input.smi (424/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL3326704 in input.smi (425/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3326707 in input.smi (426/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3326709 in input.smi (427/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3327246 in input.smi (428/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3327247 in input.smi (429/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL116438 in input.smi (430/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing CHEMBL297453 in input.smi (431/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL3298066 in input.smi (432/1425). Average speed: 0.07 s/mol.
+Processing CHEMBL151 in input.smi (433/1425). Average speed: 0.07 s/mol.
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">15</span>
+<span class="g g-Whitespace">     </span><span class="mi">13</span> <span class="n">input_file</span> <span class="o">=</span> <span class="s1">&#39;input.smi&#39;</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span> <span class="n">output_file</span> <span class="o">=</span> <span class="s1">&#39;output.csv&#39;</span>
+<span class="ne">---&gt; </span><span class="mi">15</span> <span class="n">calculate_padel_descriptors</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+
+<span class="nn">Cell In[6], line 11,</span> in <span class="ni">calculate_padel_descriptors</span><span class="nt">(input_file, output_file, padel_jar)</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">def</span> <span class="nf">calculate_padel_descriptors</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">padel_jar</span><span class="o">=</span><span class="s1">&#39;PaDEL-Descriptor/PaDEL-Descriptor.jar&#39;</span><span class="p">):</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">command</span> <span class="o">=</span> <span class="p">[</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>         <span class="s1">&#39;java&#39;</span><span class="p">,</span> <span class="s1">&#39;-jar&#39;</span><span class="p">,</span> <span class="n">padel_jar</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>         <span class="s1">&#39;-removesalt&#39;</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>         <span class="s1">&#39;-file&#39;</span><span class="p">,</span> <span class="n">output_file</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span>     <span class="p">]</span>
+<span class="ne">---&gt; </span><span class="mi">11</span>     <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+<span class="nn">File /opt/miniconda3/lib/python3.12/subprocess.py:550,</span> in <span class="ni">run</span><span class="nt">(input, capture_output, timeout, check, *popenargs, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">548</span> <span class="k">with</span> <span class="n">Popen</span><span class="p">(</span><span class="o">*</span><span class="n">popenargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">process</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">549</span>     <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">550</span>         <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">551</span>     <span class="k">except</span> <span class="n">TimeoutExpired</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">552</span>         <span class="n">process</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+
+<span class="nn">File /opt/miniconda3/lib/python3.12/subprocess.py:1201,</span> in <span class="ni">Popen.communicate</span><span class="nt">(self, input, timeout)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1199</span>         <span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1200</span>         <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="ne">-&gt; </span><span class="mi">1201</span>     <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1202</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1203</span>     <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="nn">File /opt/miniconda3/lib/python3.12/subprocess.py:1264,</span> in <span class="ni">Popen.wait</span><span class="nt">(self, timeout)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1262</span>     <span class="n">endtime</span> <span class="o">=</span> <span class="n">_time</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
+<span class="g g-Whitespace">   </span><span class="mi">1263</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1264</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1265</span> <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1266</span>     <span class="c1"># https://bugs.python.org/issue25942</span>
+<span class="g g-Whitespace">   </span><span class="mi">1267</span>     <span class="c1"># The first keyboard interrupt waits briefly for the child to</span>
+<span class="g g-Whitespace">   </span><span class="mi">1268</span>     <span class="c1"># exit under the common assumption that it also received the ^C</span>
+<span class="g g-Whitespace">   </span><span class="mi">1269</span>     <span class="c1"># generated SIGINT and will exit rapidly.</span>
+<span class="g g-Whitespace">   </span><span class="mi">1270</span>     <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="nn">File /opt/miniconda3/lib/python3.12/subprocess.py:2051,</span> in <span class="ni">Popen._wait</span><span class="nt">(self, timeout)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2049</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">2050</span>     <span class="k">break</span>  <span class="c1"># Another thread waited.</span>
+<span class="ne">-&gt; </span><span class="mi">2051</span> <span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">sts</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_try_wait</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2052</span> <span class="c1"># Check the pid and loop as waitpid has been known to</span>
+<span class="g g-Whitespace">   </span><span class="mi">2053</span> <span class="c1"># return 0 even without WNOHANG in odd situations.</span>
+<span class="g g-Whitespace">   </span><span class="mi">2054</span> <span class="c1"># http://bugs.python.org/issue14396.</span>
+<span class="g g-Whitespace">   </span><span class="mi">2055</span> <span class="k">if</span> <span class="n">pid</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">:</span>
+
+<span class="nn">File /opt/miniconda3/lib/python3.12/subprocess.py:2009,</span> in <span class="ni">Popen._try_wait</span><span class="nt">(self, wait_flags)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2007</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;All callers to this function MUST hold self._waitpid_lock.&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">2008</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">2009</span>     <span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">sts</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">waitpid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="n">wait_flags</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2010</span> <span class="k">except</span> <span class="ne">ChildProcessError</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">2011</span>     <span class="c1"># This happens if SIGCLD is set to be ignored or waiting</span>
+<span class="g g-Whitespace">   </span><span class="mi">2012</span>     <span class="c1"># for child processes has otherwise been disabled for our</span>
+<span class="g g-Whitespace">   </span><span class="mi">2013</span>     <span class="c1"># process.  This child is dead, we can&#39;t get the status.</span>
+<span class="g g-Whitespace">   </span><span class="mi">2014</span>     <span class="n">pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
+</pre></div>
+</div>
+</div>
+</div>
+<p>Read the output.csv file</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_padel</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">output_file</span><span class="p">)</span>
+<span class="n">df_padel</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Name&#39;</span><span class="p">:</span> <span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df_padel</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>molecule_chembl_id</th>
+      <th>PubchemFP0</th>
+      <th>PubchemFP1</th>
+      <th>PubchemFP2</th>
+      <th>PubchemFP3</th>
+      <th>PubchemFP4</th>
+      <th>PubchemFP5</th>
+      <th>PubchemFP6</th>
+      <th>PubchemFP7</th>
+      <th>PubchemFP8</th>
+      <th>...</th>
+      <th>PubchemFP871</th>
+      <th>PubchemFP872</th>
+      <th>PubchemFP873</th>
+      <th>PubchemFP874</th>
+      <th>PubchemFP875</th>
+      <th>PubchemFP876</th>
+      <th>PubchemFP877</th>
+      <th>PubchemFP878</th>
+      <th>PubchemFP879</th>
+      <th>PubchemFP880</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CHEMBL450926</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CHEMBL193971</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>CHEMBL311039</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CHEMBL196279</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CHEMBL74874</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 882 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="id1">
+<h2>Exploratory Data Analysis<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <p>Take a look at the summary statistic for pIC50</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -705,6 +1589,433 @@ min         2.781202
 75%         6.568636
 max         9.522879
 Name: pIC50, dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="summary-statistic-for-lipinski-descriptors">
+<h2>Summary statistic for lipinski descriptors<a class="headerlink" href="#summary-statistic-for-lipinski-descriptors" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;mol_weight&#39;</span><span class="p">,</span> <span class="s1">&#39;log_p&#39;</span><span class="p">,</span> <span class="s1">&#39;num_h_donors&#39;</span><span class="p">,</span> <span class="s1">&#39;num_h_acceptors&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mol_weight</th>
+      <th>log_p</th>
+      <th>num_h_donors</th>
+      <th>num_h_acceptors</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>1425.000000</td>
+      <td>1425.000000</td>
+      <td>1425.000000</td>
+      <td>1425.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>416.804640</td>
+      <td>3.997903</td>
+      <td>1.923509</td>
+      <td>5.451228</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>129.329933</td>
+      <td>1.639160</td>
+      <td>1.495936</td>
+      <td>2.156265</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>123.111000</td>
+      <td>-3.834600</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>323.392000</td>
+      <td>2.963200</td>
+      <td>1.000000</td>
+      <td>4.000000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>400.276000</td>
+      <td>3.842900</td>
+      <td>2.000000</td>
+      <td>5.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>502.655000</td>
+      <td>5.049600</td>
+      <td>2.000000</td>
+      <td>6.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>1518.919000</td>
+      <td>12.733440</td>
+      <td>12.000000</td>
+      <td>20.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Visualize the distribution for the lipinski descriptors</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s1">&#39;mol_weight&#39;</span><span class="p">,</span> <span class="s1">&#39;log_p&#39;</span><span class="p">,</span> <span class="s1">&#39;num_h_donors&#39;</span><span class="p">,</span> <span class="s1">&#39;num_h_acceptors&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Distribution of </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/019582d8e41b0ad2401f8ab4659808fe9312ba16850ed067c1577f2a150fa95d.png" src="../_images/019582d8e41b0ad2401f8ab4659808fe9312ba16850ed067c1577f2a150fa95d.png" />
+</div>
+</div>
+</section>
+<section id="summary-statistic-for-padel-descriptors">
+<h2>Summary statistic for PaDEL descriptors<a class="headerlink" href="#summary-statistic-for-padel-descriptors" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_padel</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>PubchemFP0</th>
+      <th>PubchemFP1</th>
+      <th>PubchemFP2</th>
+      <th>PubchemFP3</th>
+      <th>PubchemFP4</th>
+      <th>PubchemFP5</th>
+      <th>PubchemFP6</th>
+      <th>PubchemFP7</th>
+      <th>PubchemFP8</th>
+      <th>PubchemFP9</th>
+      <th>...</th>
+      <th>PubchemFP871</th>
+      <th>PubchemFP872</th>
+      <th>PubchemFP873</th>
+      <th>PubchemFP874</th>
+      <th>PubchemFP875</th>
+      <th>PubchemFP876</th>
+      <th>PubchemFP877</th>
+      <th>PubchemFP878</th>
+      <th>PubchemFP879</th>
+      <th>PubchemFP880</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>1425.0</td>
+      <td>1425.000000</td>
+      <td>1425.000000</td>
+      <td>1425.000000</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>1425.000000</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>...</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+      <td>1425.0</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>1.0</td>
+      <td>0.993684</td>
+      <td>0.753684</td>
+      <td>0.194386</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.004912</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>0.0</td>
+      <td>0.079248</td>
+      <td>0.431016</td>
+      <td>0.395866</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.069940</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>1.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>1.0</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>1.0</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>1.0</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>1.0</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>8 rows × 881 columns</p>
+</div></div></div>
+</div>
+<p>Visualize the distribution of the first few descriptors</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">columns_to_plot</span> <span class="o">=</span> <span class="n">df_padel</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">9</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+
+<span class="c1"># Loop through the columns and create subplots</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">columns_to_plot</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">df_padel</span><span class="p">[</span><span class="n">column</span><span class="p">],</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Distribution of </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>  <span class="c1"># Assuming fingerprint values are binary (0 or 1)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/33b31b651336ccb9e2ff7dc0562ecd4c79432694cdc9263bae9313bc7ee9724a.png" src="../_images/33b31b651336ccb9e2ff7dc0562ecd4c79432694cdc9263bae9313bc7ee9724a.png" />
+</div>
+</div>
+</section>
+<section id="prepare-model-input-and-target">
+<h2>Prepare Model input and target<a class="headerlink" href="#prepare-model-input-and-target" title="Link to this heading">#</a></h2>
+<p>Use the lipinski descriptors and molecule descriptors as the Input X
+Use the pIC50 as the target Y</p>
+<p>merge the dataframe</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merged_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">df_padel</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">merged_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pIC50&#39;</span><span class="p">,</span> <span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">,</span> <span class="s1">&#39;canonical_smiles&#39;</span><span class="p">,</span> <span class="s1">&#39;standard_value&#39;</span><span class="p">,</span> <span class="s1">&#39;bioactivity_level&#39;</span><span class="p">])</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">merged_df</span><span class="p">[</span><span class="s1">&#39;pIC50&#39;</span><span class="p">]</span>
+
+<span class="c1"># Display the shapes of X and Y to verify</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(2985, 885)
+(2985,)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Download the X and Y data for model building</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;X.csv&#39;</span><span class="p">)</span>
+<span class="n">Y</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;Y.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -768,8 +2079,13 @@ Name: pIC50, dtype: float64
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lipinski-descriptors">Lipinski Descriptors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-descriptors">Calculate descriptors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-lipinski-descriptors">Calculate lipinski descriptors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-pic50-values">Calculate pIC50 values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-molecule-descriptors-from-padel">Calculate Molecule descriptors from PaDEL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Exploratory Data Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-statistic-for-lipinski-descriptors">Summary statistic for lipinski descriptors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-statistic-for-padel-descriptors">Summary statistic for PaDEL descriptors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-model-input-and-target">Prepare Model input and target</a></li>
 </ul>
   </nav></div>
 
