@@ -3,7 +3,7 @@
 
 title: IC50_Prediction
 author: Mohan Yang
-logo: logo.png
+logo: pIC50.png
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html

@@ -3,3 +3,6 @@ chembl_webresource_client
 pandas
 numpy
 rdkit
+seaborn
+matplotlib
+scikit-learn
