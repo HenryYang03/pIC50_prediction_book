@@ -7,3 +7,4 @@ chapters:
 - file: notebooks/Data_extraction_from_ChEMBL.ipynb
 - file: notebooks/Exploratory_Data_Analysis.ipynb
 - file: notebooks/Neural_Network_prediction.ipynb
+- file: notebooks/CNN_prediction.ipynb
