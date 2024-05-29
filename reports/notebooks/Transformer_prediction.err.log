@@ -37,6 +37,8 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-trained_W1, trained_B1, trained_W2, trained_B2, trained_W3, trained_B3, loss_history = train(x_train, y_train)
+['input_shape = (885, 1)', 'head_size = 64', 'num_heads = 1', 'ff_dim= 64', 'num_transformer_blocks = 1']
+...
+["plt.xlabel('Actual pIC50 Values')", "plt.ylabel('Predicted pIC50 Values')", "plt.title('Actual vs Predicted pIC50 Values')", "plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='red')  # Line of equality", 'plt.show()']
 -------------------
 
