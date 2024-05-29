@@ -62,7 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Neural_Network_prediction';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="CNN_prediction.html" />
+    <link rel="next" title="CNN Prediction" href="CNN_prediction.html" />
     <link rel="prev" title="Exploratory Data Analysis" href="Exploratory_Data_Analysis.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -182,6 +182,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Data_extraction_from_ChEMBL.html">Data Extraction from ChEMBL Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Exploratory_Data_Analysis.html">Exploratory Data Analysis</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Neural Network Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CNN_prediction.html">CNN Prediction</a></li>
 </ul>
 
     </div>
@@ -909,7 +910,7 @@ dB_1 = 1/m \sum_{i=1}^{2388} dZ_1
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 0, Loss: 15.836702110871764
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 0, Loss: 15.797684854858653
 </pre></div>
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
@@ -917,19 +918,18 @@ dB_1 = 1/m \sum_{i=1}^{2388} dZ_1
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">14</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">trained_W1</span><span class="p">,</span> <span class="n">trained_B1</span><span class="p">,</span> <span class="n">trained_W2</span><span class="p">,</span> <span class="n">trained_B2</span><span class="p">,</span> <span class="n">trained_W3</span><span class="p">,</span> <span class="n">trained_B3</span><span class="p">,</span> <span class="n">loss_history</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 
-<span class="nn">Cell In[13], line 11,</span> in <span class="ni">train</span><span class="nt">(X, Y, learning_rate, epochs)</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">A3</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="n">loss_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
-<span class="ne">---&gt; </span><span class="mi">11</span> <span class="n">dW1</span><span class="p">,</span> <span class="n">dB1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">dB2</span><span class="p">,</span> <span class="n">dW3</span><span class="p">,</span> <span class="n">dB3</span> <span class="o">=</span> <span class="n">back_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">W3</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">12</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">B3</span> <span class="o">=</span> <span class="n">update_parameters</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">B3</span><span class="p">,</span> <span class="n">dW1</span><span class="p">,</span> <span class="n">dB1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">dB2</span><span class="p">,</span> <span class="n">dW3</span><span class="p">,</span> <span class="n">dB3</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">14</span> <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="nn">Cell In[13], line 6,</span> in <span class="ni">train</span><span class="nt">(X, Y, learning_rate, epochs)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">loss_history</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+<span class="ne">----&gt; </span><span class="mi">6</span>     <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">Z3</span><span class="p">,</span> <span class="n">A3</span> <span class="o">=</span> <span class="n">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">B3</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">A3</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">loss_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
 
-<span class="nn">Cell In[10], line 9,</span> in <span class="ni">back_prop</span><span class="nt">(X, Y, Z1, A1, Z2, A2, Z3, A3, W2, W3)</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="c1"># Output layer gradients</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="n">dZ3</span> <span class="o">=</span> <span class="n">A3</span> <span class="o">-</span> <span class="n">Y</span>
-<span class="ne">----&gt; </span><span class="mi">9</span> <span class="n">dW3</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dZ3</span><span class="p">,</span> <span class="n">A2</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="n">dB3</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dZ3</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">12</span> <span class="c1"># Hidden layer 2 gradients</span>
+<span class="nn">Cell In[9], line 2,</span> in <span class="ni">forward_prop</span><span class="nt">(X, W1, B1, W2, B2, W3, B3, dropout_rate)</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">def</span> <span class="nf">forward_prop</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">B1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">B2</span><span class="p">,</span> <span class="n">W3</span><span class="p">,</span> <span class="n">B3</span><span class="p">,</span> <span class="n">dropout_rate</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">):</span>
+<span class="ne">----&gt; </span><span class="mi">2</span>     <span class="n">Z1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">B1</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">A1</span> <span class="o">=</span> <span class="n">ReLU</span><span class="p">(</span><span class="n">Z1</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">A1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">dropout_rate</span><span class="p">,</span> <span class="n">A1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">dropout_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">A1</span>
 
 <span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
@@ -1061,7 +1061,7 @@ loss : 2.647958740984562
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">&lt;no title&gt;</p>
+        <p class="prev-next-title">CNN Prediction</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
