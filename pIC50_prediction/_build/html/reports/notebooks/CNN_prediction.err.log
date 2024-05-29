@@ -37,7 +37,7 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-['x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = 0.2, random_state = 1)', '', '# Transpose the dataset', 'x_train = np.array(x_train)', 'x_test = np.array(x_test)']
+['%%capture train', '', 'x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = 0.2, random_state = 1)', '', '# Transpose the dataset']
 ...
 ['])', '', '', "model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error'])", 'model.fit(x_train, y_train, epochs=100, batch_size=32, validation_split=0.2)']
 -------------------

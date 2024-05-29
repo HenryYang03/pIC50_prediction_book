@@ -8,3 +8,4 @@ chapters:
 - file: notebooks/Exploratory_Data_Analysis.ipynb
 - file: notebooks/Neural_Network_prediction.ipynb
 - file: notebooks/CNN_prediction.ipynb
+
