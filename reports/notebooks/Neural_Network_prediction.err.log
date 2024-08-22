@@ -37,6 +37,6 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-trained_W1, trained_B1, trained_W2, trained_B2, trained_W3, trained_B3, loss_history = train(x_train, y_train)
+trained_W1, trained_B1, trained_W2, trained_B2, trained_W3, trained_B3, trained_W4, trained_B4, loss_history = train(x_train, y_train)
 -------------------
 
